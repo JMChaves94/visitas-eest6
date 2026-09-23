@@ -1,0 +1,9 @@
+{
+  "name": "visitas-eest6",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "check": "node --check app.js && node --check api/visitas.js && node --check --input-type=commonjs < google-apps-script/Code.gs"
+  }
+}

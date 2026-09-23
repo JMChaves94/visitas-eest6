@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Sistema de inscripción a visitas institucionales de la E.E.S.T. N.º 6 Chacabuco de Morón.">
+  <meta name="theme-color" content="#060914">
+  <title>Visitas | E.E.S.T. N.º 6 Chacabuco</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#contenido">Saltar al contenido</a>
+
+  <header class="site-header">
+    <div class="shell header-inner">
+      <a class="brand" href="#inicio" aria-label="Inicio de Visitas EEST 6">
+        <span class="brand-logo" aria-hidden="true"><img src="assets/logo.jpeg" alt=""></span>
+        <span>
+          <strong>E.E.S.T. N.º 6 “Chacabuco”</strong>
+          <small>Morón · Visitas institucionales</small>
+        </span>
+      </a>
+      <button class="menu-button" id="menuButton" type="button" aria-expanded="false" aria-controls="mainNav">
+        <span></span><span></span><span></span>
+        <span class="sr-only">Abrir menú</span>
+      </button>
+      <nav class="main-nav" id="mainNav" aria-label="Navegación principal">
+        <a href="#inicio">Inicio</a>
+        <a href="#inscripcion">Inscripción</a>
+        <a href="#consulta">Consultar turno</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="contenido">
+    <section class="hero" id="inicio">
+      <div class="shell hero-grid">
+        <div class="hero-copy">
+          <p class="eyebrow">Puertas abiertas 2026</p>
+          <h1>Vení a conocer nuestra escuela</h1>
+          <p class="hero-text">Reservá una visita para recorrer las instalaciones, conocer las modalidades y conversar con docentes y estudiantes.</p>
+          <div class="hero-actions">
+            <a class="button button-primary" href="#inscripcion">Reservar una visita</a>
+            <a class="button button-quiet" href="#consulta">Ya tengo un turno</a>
+          </div>
+          <ul class="trust-list" aria-label="Características del sistema">
+            <li>Reserva gratuita</li>
+            <li>Confirmación inmediata</li>
+            <li>Cupos organizados</li>
+          </ul>
+        </div>
+
+        <aside class="availability-card" aria-labelledby="availableTitle">
+          <div class="card-heading">
+            <span class="status-dot" aria-hidden="true"></span>
+            <p>Próximo turno disponible</p>
+          </div>
+          <div id="availabilityContent">
+            <h2 id="availableTitle">Buscando disponibilidad…</h2>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <section class="section shell" id="inscripcion">
+      <div class="section-heading">
+        <p class="eyebrow">Inscripción</p>
+        <h2>Reservá el turno de tu familia</h2>
+        <p>Completá los datos. El sistema asignará automáticamente el primer horario con espacio suficiente para el grupo.</p>
+      </div>
+
+      <div class="form-layout">
+        <form class="panel form-panel" id="registrationForm" novalidate>
+          <label class="honeypot" aria-hidden="true">
+            <span>No completar</span>
+            <input name="website" type="text" tabindex="-1" autocomplete="off">
+          </label>
+          <div class="form-section">
+            <div class="form-section-title">
+              <span>1</span>
+              <div><h3>Datos del estudiante</h3><p>Información del futuro ingresante.</p></div>
+            </div>
+            <div class="field-grid two-columns">
+              <label class="field">
+                <span>Nombre y apellido</span>
+                <input name="studentName" type="text" autocomplete="name" maxlength="80" required placeholder="Ej.: Martina González">
+                <small class="field-error"></small>
+              </label>
+              <label class="field">
+                <span>DNI</span>
+                <input name="studentDni" type="text" inputmode="numeric" autocomplete="off" maxlength="10" required placeholder="Sin puntos">
+                <small class="field-error"></small>
+              </label>
+              <label class="field field-wide">
+                <span>Escuela primaria</span>
+                <input name="primarySchool" type="text" maxlength="100" required placeholder="Nombre o número de escuela">
+                <small class="field-error"></small>
+              </label>
+            </div>
+          </div>
+
+          <div class="form-section">
+            <div class="form-section-title">
+              <span>2</span>
+              <div><h3>Datos de contacto</h3><p>Usaremos este correo para enviar la confirmación.</p></div>
+            </div>
+            <div class="field-grid two-columns">
+              <label class="field">
+                <span>Adulto responsable</span>
+                <input name="adultName" type="text" autocomplete="name" maxlength="80" required placeholder="Nombre y apellido">
+                <small class="field-error"></small>
+              </label>
+              <label class="field">
+                <span>Correo electrónico</span>
+                <input name="email" type="email" autocomplete="email" maxlength="120" required placeholder="nombre@correo.com">
+                <small class="field-error"></small>
+              </label>
+              <label class="field">
+                <span>Teléfono</span>
+                <input name="phone" type="tel" inputmode="tel" autocomplete="tel" maxlength="25" required placeholder="11 1234 5678">
+                <small class="field-error"></small>
+              </label>
+              <label class="field">
+                <span>Personas que asistirán</span>
+                <select name="attendees" required>
+                  <option value="">Seleccionar</option>
+                  <option value="1">1 persona</option>
+                  <option value="2">2 personas</option>
+                  <option value="3">3 personas</option>
+                  <option value="4">4 personas</option>
+                  <option value="5">5 personas</option>
+                </select>
+                <small class="field-error"></small>
+              </label>
+            </div>
+          </div>
+
+          <div class="form-section">
+            <div class="form-section-title">
+              <span>3</span>
+              <div><h3>Vínculo con la escuela</h3><p>Este dato nos ayuda a conocer a las familias que nos visitan.</p></div>
+            </div>
+            <fieldset class="choice-field">
+              <legend>¿Ya tiene un hijo, familiar o conocido en la escuela?</legend>
+              <div class="choice-row">
+                <label><input type="radio" name="hasRelative" value="Sí" required> Sí</label>
+                <label><input type="radio" name="hasRelative" value="No" required> No</label>
+              </div>
+              <small class="field-error"></small>
+            </fieldset>
+            <label class="check-field">
+              <input name="consent" type="checkbox" required>
+              <span>Confirmo que los datos son correctos y acepto que se utilicen únicamente para organizar esta visita.</span>
+            </label>
+            <small class="field-error consent-error"></small>
+          </div>
+
+          <div class="form-actions">
+            <p><strong>Importante:</strong> la reserva queda asociada al DNI del estudiante.</p>
+            <button class="button button-primary" type="submit" id="submitButton">Confirmar reserva</button>
+          </div>
+        </form>
+
+        <aside class="steps-panel" aria-label="Cómo funciona">
+          <h3>¿Cómo funciona?</h3>
+          <ol>
+            <li><span>1</span><div><strong>Completás el formulario</strong><p>Ingresá los datos del estudiante y un correo de contacto.</p></div></li>
+            <li><span>2</span><div><strong>Asignamos un horario</strong><p>La reserva pasa al primer turno que tenga lugar para todo el grupo.</p></div></li>
+            <li><span>3</span><div><strong>Guardás el comprobante</strong><p>También lo recibirás por correo y podrás consultarlo con DNI y código.</p></div></li>
+          </ol>
+          <div class="notice"><strong>Cupo máximo</strong><span>50 personas por recorrido</span></div>
+        </aside>
+      </div>
+    </section>
+
+    <section class="section section-tinted" id="consulta">
+      <div class="shell narrow">
+        <div class="section-heading centered">
+          <p class="eyebrow">Consulta</p>
+          <h2>Buscá tu reserva</h2>
+          <p>Ingresá el DNI del estudiante y el código enviado por correo.</p>
+        </div>
+        <form class="search-card" id="lookupForm">
+          <label class="field grow">
+            <span>DNI del estudiante</span>
+            <input name="lookupDni" type="text" inputmode="numeric" maxlength="10" required placeholder="Ej.: 50123456">
+          </label>
+          <label class="field grow">
+            <span>Código de reserva</span>
+            <input name="lookupCode" type="text" maxlength="20" required placeholder="Ej.: VIS-2026-0001">
+          </label>
+          <button class="button button-dark" type="submit">Buscar turno</button>
+        </form>
+        <div id="lookupResult" aria-live="polite"></div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="site-footer">
+    <div class="shell footer-inner">
+      <div class="brand footer-brand"><span class="brand-logo" aria-hidden="true"><img src="assets/logo-eest6.png" alt=""></span><span><strong>E.E.S.T. N.º 6 “Chacabuco”</strong><small>Morón, Buenos Aires</small></span></div>
+      <p>Sistema de visitas institucionales · 2026</p>
+    </div>
+  </footer>
+
+  <dialog class="success-dialog" id="successDialog">
+    <div class="receipt" id="receipt">
+      <div class="success-icon" aria-hidden="true">✓</div>
+      <p class="eyebrow">Reserva confirmada</p>
+      <h2>Tu visita quedó registrada</h2>
+      <p class="dialog-lead">Guardá este comprobante para presentarlo al ingresar.</p>
+      <div class="receipt-code"><span>Código de reserva</span><strong id="receiptCode"></strong></div>
+      <dl class="receipt-details" id="receiptDetails"></dl>
+      <p class="email-status" id="receiptEmailStatus"></p>
+      <div class="receipt-note"><strong>E.E.S.T. N.º 6 “Chacabuco”</strong><span>Presentarse 10 minutos antes del horario asignado.</span></div>
+    </div>
+    <div class="dialog-actions">
+      <button class="button button-quiet" id="closeDialog" type="button">Cerrar</button>
+      <button class="button button-primary" id="printReceipt" type="button">Imprimir comprobante</button>
+    </div>
+  </dialog>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <script src="app.js"></script>
+</body>
+</html>
