@@ -35,7 +35,6 @@ function configurarSistema() {
   if (!propiedades.getProperty("BACKEND_SECRET")) {
     propiedades.setProperty("BACKEND_SECRET", Utilities.getUuid() + Utilities.getUuid());
   }
-  if (!propiedades.getProperty("SECUENCIA")) propiedades.setProperty("SECUENCIA", "0");
   prepararHoja_();
 
   console.log("BACKEND_SECRET=" + propiedades.getProperty("BACKEND_SECRET"));
@@ -94,13 +93,13 @@ function registrar_(datos) {
     const ocupacion = calcularOcupacion_(filas);
     const personas = Number(datos.attendees);
     const turno = TURNOS.find(function (item) {
-      return item.capacidad - (ocupacion[item.id] || 0) >= personas;
+      return item.capacidad - (ocupacion[item.id] || 0) >= 1;
     });
     if (!turno) {
-      return respuesta_({ ok: false, code: "NO_CAPACITY", message: "No queda un turno con espacio suficiente para todo el grupo." });
+      return respuesta_({ ok: false, code: "NO_CAPACITY", message: "No quedan cupos disponibles para nuevas familias." });
     }
 
-    const codigo = siguienteCodigo_();
+    const codigo = siguienteCodigo_(filas);
     reserva = {
       code: codigo,
       studentName: limpiarTexto_(datos.studentName, 80),
@@ -126,7 +125,7 @@ function registrar_(datos) {
     candado.releaseLock();
   }
 
-  const correo = enviarCorreos_(reserva);
+  const correo = enviarConfirmacion_(reserva);
   prepararHoja_().getRange(fila, 15).setValue(correo.estado);
   return respuesta_({ ok: true, reservation: reservaPublica_(reserva), emailSent: correo.completo });
 }
@@ -153,13 +152,12 @@ function buscar_(datos) {
   if (!admitirSolicitud_(datos.clientKey, "bus", 20)) {
     return respuesta_({ ok: false, code: "RATE_LIMIT", message: "Se hicieron demasiadas búsquedas. Esperá diez minutos y volvé a probar." });
   }
-  const dni = limpiarDni_(datos.studentDni);
-  const codigo = limpiarTexto_(datos.code, 20).toUpperCase();
-  if (!/^\d{7,9}$/.test(dni) || !/^VIS-2026-\d{4,6}$/.test(codigo)) {
-    return respuesta_({ ok: false, code: "VALIDATION", message: "Revisá el DNI y el código de reserva." });
+  const codigo = limpiarTexto_(datos.code, 24).toUpperCase();
+  if (!/^VIS-2026-[A-Z0-9]{4,12}$/.test(codigo)) {
+    return respuesta_({ ok: false, code: "VALIDATION", message: "Revisá el código de reserva." });
   }
   const fila = obtenerFilas_(prepararHoja_()).find(function (row) {
-    return limpiarDni_(row[4]) === dni && String(row[1]).toUpperCase() === codigo && normalizar_(row[2]) !== "cancelada";
+    return String(row[1]).toUpperCase() === codigo && normalizar_(row[2]) !== "cancelada";
   });
   if (!fila) return respuesta_({ ok: false, code: "NOT_FOUND", message: "No encontramos una reserva activa con esos datos." });
   return respuesta_({
@@ -171,7 +169,7 @@ function buscar_(datos) {
   });
 }
 
-function enviarCorreos_(reserva) {
+function enviarConfirmacion_(reserva) {
   const config = configuracion_();
   const fecha = fechaLarga_(reserva.date);
   const asuntoFamilia = "Reserva confirmada · E.E.S.T. N.º 6 · " + fecha;
@@ -186,38 +184,15 @@ function enviarCorreos_(reserva) {
     '<p style="padding:14px;background:#eaf3fb;border-radius:8px"><strong>Código: ' + html_(reserva.code) + '</strong><br>Fecha: ' + html_(fecha) + '<br>Horario: ' + html_(reserva.time) + ' h<br>Personas: ' + html_(reserva.attendees) + '</p>' +
     '<p>Presentarse a las <strong>15:50 h</strong>.</p><p>E.E.S.T. N.º 6 “Chacabuco”</p></div>';
 
-  const asuntoEscuela = "Nueva visita " + reserva.code + " · " + reserva.studentName;
-  const textoEscuela = [
-    "Nueva inscripción a visita", "", "Código: " + reserva.code,
-    "Estudiante: " + reserva.studentName, "DNI: " + reserva.studentDni,
-    "Escuela primaria: " + reserva.primarySchool, "Adulto: " + reserva.adultName,
-    "Correo: " + reserva.email, "Teléfono: " + reserva.phone,
-    "Personas: " + reserva.attendees, "Familiar/conocido en la escuela: " + reserva.hasRelative,
-    "Fecha: " + fecha, "Horario: " + reserva.time + " h"
-  ].join("\n");
-  const htmlEscuela = '<div style="font-family:Arial,sans-serif;line-height:1.55;color:#111827"><h2>Nueva inscripción a visita</h2>' +
-    '<p><strong>Código:</strong> ' + html_(reserva.code) + '<br><strong>Estudiante:</strong> ' + html_(reserva.studentName) + '<br><strong>DNI:</strong> ' + html_(reserva.studentDni) + '<br>' +
-    '<strong>Escuela primaria:</strong> ' + html_(reserva.primarySchool) + '<br><strong>Adulto:</strong> ' + html_(reserva.adultName) + '<br><strong>Correo:</strong> ' + html_(reserva.email) + '<br>' +
-    '<strong>Teléfono:</strong> ' + html_(reserva.phone) + '<br><strong>Personas:</strong> ' + html_(reserva.attendees) + '<br><strong>Familiar/conocido:</strong> ' + html_(reserva.hasRelative) + '<br>' +
-    '<strong>Fecha:</strong> ' + html_(fecha) + '<br><strong>Horario:</strong> ' + html_(reserva.time) + ' h</p></div>';
-
   let familiaOk = false;
-  let escuelaOk = false;
   try {
-    if (MailApp.getRemainingDailyQuota() < 2) throw new Error("Sin cuota de correo disponible");
+    if (MailApp.getRemainingDailyQuota() < 1) throw new Error("Sin cuota de correo disponible");
     MailApp.sendEmail({ to: reserva.email, subject: asuntoFamilia, body: textoFamilia, htmlBody: htmlFamilia, name: "E.E.S.T. N.º 6 Chacabuco", replyTo: config.emailEscuela });
     familiaOk = true;
   } catch (error) {
     console.error("Correo a familia: " + error.message);
   }
-  try {
-    MailApp.sendEmail({ to: config.emailEscuela, subject: asuntoEscuela, body: textoEscuela, htmlBody: htmlEscuela, name: "Sistema de visitas EEST 6", replyTo: reserva.email });
-    escuelaOk = true;
-  } catch (error) {
-    console.error("Correo a escuela: " + error.message);
-  }
-  const estado = familiaOk && escuelaOk ? "Enviados" : "Familia: " + (familiaOk ? "OK" : "ERROR") + " · Escuela: " + (escuelaOk ? "OK" : "ERROR");
-  return { completo: familiaOk && escuelaOk, estado: estado };
+  return { completo: familiaOk, estado: familiaOk ? "Confirmación enviada" : "ERROR al enviar confirmación" };
 }
 
 function validarRegistro_(datos) {
@@ -227,7 +202,7 @@ function validarRegistro_(datos) {
   if (limpiarTexto_(datos.adultName, 80).length < 3) return "Revisá el nombre del adulto responsable.";
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(limpiarTexto_(datos.email, 120))) return "Ingresá un correo electrónico válido.";
   if (limpiarTexto_(datos.phone, 25).length < 6) return "Ingresá un teléfono válido.";
-  if (!Number.isInteger(Number(datos.attendees)) || Number(datos.attendees) < 1 || Number(datos.attendees) > 5) return "Seleccioná entre 1 y 5 personas.";
+  if (!Number.isInteger(Number(datos.attendees)) || Number(datos.attendees) < 1 || Number(datos.attendees) > 2) return "Seleccioná una o dos personas.";
   if (["Sí", "No"].indexOf(limpiarTexto_(datos.hasRelative, 2)) === -1) return "Indicá si ya tienen un vínculo con la escuela.";
   return "";
 }
@@ -266,17 +241,20 @@ function calcularOcupacion_(filas) {
   return filas.reduce(function (totales, row) {
     if (normalizar_(row[2]) !== "cancelada") {
       const id = String(row[13]);
-      totales[id] = (totales[id] || 0) + Number(row[9] || 0);
+      totales[id] = (totales[id] || 0) + 1;
     }
     return totales;
   }, {});
 }
 
-function siguienteCodigo_() {
-  const propiedades = PropertiesService.getScriptProperties();
-  const numero = Number(propiedades.getProperty("SECUENCIA") || 0) + 1;
-  propiedades.setProperty("SECUENCIA", String(numero));
-  return "VIS-2026-" + String(numero).padStart(4, "0");
+function siguienteCodigo_(filas) {
+  const usados = new Set(filas.map(function (row) { return String(row[1]).toUpperCase(); }));
+  for (let intento = 0; intento < 10; intento += 1) {
+    const sufijo = Utilities.getUuid().replace(/-/g, "").slice(0, 8).toUpperCase();
+    const codigo = "VIS-2026-" + sufijo;
+    if (!usados.has(codigo)) return codigo;
+  }
+  throw new Error("No se pudo generar un código de reserva único.");
 }
 
 function configuracion_() {

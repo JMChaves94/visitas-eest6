@@ -13,7 +13,7 @@ La web y el backend están armados. Estos pasos conectan el proyecto con las cue
    const CORREO_ESCUELA = "REEMPLAZAR_POR_GMAIL_INSTITUCIONAL";
    ```
 
-   por el correo institucional que debe recibir cada inscripción.
+   por el correo institucional que debe figurar como dirección de respuesta en las confirmaciones familiares. La escuela no recibe un mensaje por cada inscripción: administra los registros desde la planilla.
 5. Guardar. En el selector de funciones elegir `configurarSistema` y presionar **Ejecutar**.
 6. Google pedirá permisos para acceder a la planilla y enviar correos. Aceptarlos desde la cuenta de la escuela.
 7. Abrir **Registro de ejecución** y copiar el valor completo que aparece después de `BACKEND_SECRET=`. No publicarlo ni pegarlo en el frontend.
@@ -40,17 +40,16 @@ Que la aplicación web admita solicitudes públicas no expone la planilla: cada 
 
 1. Abrir la URL pública de Vercel en una ventana privada.
 2. Completar una reserva usando una dirección de TempMail como correo familiar.
-3. Al confirmar deben ocurrir las cuatro cosas siguientes:
+3. Al confirmar deben ocurrir las tres cosas siguientes:
 
    - aparece el comprobante y un código `VIS-2026-...`;
-   - se crea una fila en `Inscripciones`;
+   - se crea una fila completa en `Inscripciones`, incluyendo DNI, correo y teléfono;
    - llega la confirmación a TempMail;
-   - llega el detalle completo al Gmail institucional.
 
-4. Probar **Consultar turno** con el mismo DNI y el código del comprobante.
+4. Probar **Consultar turno** utilizando solamente el código del comprobante.
 5. Para repetir la prueba, cambiar la columna `Estado` de la fila anterior a `Cancelada` o usar otro DNI de prueba.
 
-Revisar también Spam/Correo no deseado. Apps Script tiene una cuota diaria de destinatarios definida por el tipo de cuenta de Google. Si se agota, la reserva igual queda guardada y la columna `Estado correo` indica cuál envío falló.
+Cada reserva representa una familia y ocupa uno de los 50 cupos, tanto si asiste una persona como si asisten dos. Revisar también Spam/Correo no deseado. Apps Script tiene una cuota diaria de destinatarios definida por el tipo de cuenta de Google. Si se agota, la reserva igual queda guardada y la columna `Estado correo` indica el fallo.
 
 ## Seguridad aplicada
 
@@ -58,8 +57,7 @@ Revisar también Spam/Correo no deseado. Apps Script tiene una cuota diaria de d
 - no hay acceso administrativo público;
 - cada inscripción se valida dos veces, en Vercel y en Google;
 - un candado evita que dos familias ocupen simultáneamente el último cupo;
-- DNI + código son obligatorios para consultar;
+- la consulta exige un código de reserva aleatorio y difícil de adivinar;
 - hay límite por origen para registros y búsquedas;
 - se usa un campo señuelo contra bots;
 - Vercel recibe solo una huella anónima del origen; la planilla no almacena IPs.
-

@@ -60,7 +60,7 @@
     host.innerHTML =
       '<h2 id="availableTitle">' + escapeHtml(formatDate(nextShift.date)) + '</h2>' +
       '<p class="availability-date">' + escapeHtml(nextShift.time) + ' h · E.E.S.T. N.º 6</p>' +
-      '<div class="capacity-line"><span>Lugares ocupados</span><strong>' + used + ' / ' + capacity + '</strong></div>' +
+      '<div class="capacity-line"><span>Familias registradas</span><strong>' + used + ' / ' + capacity + '</strong></div>' +
       '<div class="progress" aria-label="' + percent + '% del cupo ocupado"><span style="width:' + percent + '%"></span></div>' +
       '<a class="button button-primary" href="#inscripcion">Reservar una visita</a>';
   }
@@ -117,7 +117,7 @@
     emailStatus.classList.toggle("warning", emailSent === false);
     emailStatus.textContent = emailSent === false
       ? "La reserva quedó guardada, pero el correo no pudo enviarse. Imprimí o anotá este código."
-      : "Enviamos la confirmación al correo informado y el registro a la escuela.";
+      : "Enviamos la confirmación al correo informado. Los datos quedaron registrados en la planilla de la escuela.";
     $("#successDialog").showModal();
   }
 
@@ -171,16 +171,15 @@
     var data = new FormData(form);
     var host = $("#lookupResult");
     var button = $("button[type=submit]", form);
-    var dni = cleanDni(data.get("lookupDni"));
     var code = String(data.get("lookupCode") || "").trim().toUpperCase();
-    if (!/^\d{7,9}$/.test(dni) || !/^VIS-2026-\d{4,6}$/.test(code)) {
-      host.innerHTML = '<div class="empty-message">Revisá el DNI y el código de reserva.</div>';
+    if (!/^VIS-2026-[A-Z0-9]{4,12}$/.test(code)) {
+      host.innerHTML = '<div class="empty-message">Revisá el código de reserva.</div>';
       return;
     }
     host.innerHTML = '<div class="lookup-loading">Buscando la reserva…</div>';
     setSubmitting(button, true, "Buscando…");
     try {
-      var result = await apiRequest("lookup", { studentDni: dni, code: code });
+      var result = await apiRequest("lookup", { code: code });
       var reservation = result.reservation;
       lastReservation = reservation;
       host.innerHTML =

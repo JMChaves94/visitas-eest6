@@ -14,7 +14,7 @@
   <header class="site-header">
     <div class="shell header-inner">
       <a class="brand" href="#inicio" aria-label="Inicio de Visitas EEST 6">
-        <span class="brand-logo" aria-hidden="true"><img src="assets/logo.jpeg" alt=""></span>
+        <span class="brand-logo" aria-hidden="true"><img src="assets/logo-eest6.png" alt=""></span>
         <span>
           <strong>E.E.S.T. N.º 6 “Chacabuco”</strong>
           <small>Morón · Visitas institucionales</small>
@@ -126,9 +126,6 @@
                   <option value="">Seleccionar</option>
                   <option value="1">1 persona</option>
                   <option value="2">2 personas</option>
-                  <option value="3">3 personas</option>
-                  <option value="4">4 personas</option>
-                  <option value="5">5 personas</option>
                 </select>
                 <small class="field-error"></small>
               </label>
@@ -166,9 +163,9 @@
           <ol>
             <li><span>1</span><div><strong>Completás el formulario</strong><p>Ingresá los datos del estudiante y un correo de contacto.</p></div></li>
             <li><span>2</span><div><strong>Asignamos un horario</strong><p>La reserva pasa al primer turno que tenga lugar para todo el grupo.</p></div></li>
-            <li><span>3</span><div><strong>Guardás el comprobante</strong><p>También lo recibirás por correo y podrás consultarlo con DNI y código.</p></div></li>
+            <li><span>3</span><div><strong>Guardás el comprobante</strong><p>También lo recibirás por correo y podrás consultarlo con su código.</p></div></li>
           </ol>
-          <div class="notice"><strong>Cupo máximo</strong><span>50 personas por recorrido</span></div>
+          <div class="notice"><strong>Cupo máximo</strong><span>50 familias por recorrido · hasta 2 personas por familia</span></div>
         </aside>
       </div>
     </section>
@@ -178,16 +175,12 @@
         <div class="section-heading centered">
           <p class="eyebrow">Consulta</p>
           <h2>Buscá tu reserva</h2>
-          <p>Ingresá el DNI del estudiante y el código enviado por correo.</p>
+          <p>Ingresá el código enviado por correo.</p>
         </div>
         <form class="search-card" id="lookupForm">
           <label class="field grow">
-            <span>DNI del estudiante</span>
-            <input name="lookupDni" type="text" inputmode="numeric" maxlength="10" required placeholder="Ej.: 50123456">
-          </label>
-          <label class="field grow">
             <span>Código de reserva</span>
-            <input name="lookupCode" type="text" maxlength="20" required placeholder="Ej.: VIS-2026-0001">
+            <input name="lookupCode" type="text" maxlength="24" required placeholder="Ej.: VIS-2026-A7F3C9D2">
           </label>
           <button class="button button-dark" type="submit">Buscar turno</button>
         </form>

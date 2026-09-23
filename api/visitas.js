@@ -48,17 +48,16 @@ function validateRegister(input) {
   if (!/^\d{7,9}$/.test(data.studentDni)) return { error: "Ingresá un DNI válido, sin puntos." };
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) return { error: "Ingresá un correo electrónico válido." };
   if (data.phone.length < 6) return { error: "Ingresá un teléfono válido." };
-  if (!Number.isInteger(data.attendees) || data.attendees < 1 || data.attendees > 5) return { error: "Seleccioná entre 1 y 5 personas." };
+  if (!Number.isInteger(data.attendees) || data.attendees < 1 || data.attendees > 2) return { error: "Seleccioná una o dos personas." };
   if (!new Set(["Sí", "No"]).has(data.hasRelative)) return { error: "Indicá si ya tienen un vínculo con la escuela." };
   return { data };
 }
 
 function validateLookup(input) {
   const data = {
-    studentDni: cleanDni(input.studentDni),
-    code: cleanText(input.code, 20).toUpperCase()
+    code: cleanText(input.code, 24).toUpperCase()
   };
-  if (!/^\d{7,9}$/.test(data.studentDni) || !/^VIS-2026-\d{4,6}$/.test(data.code)) return { error: "Revisá el DNI y el código de reserva." };
+  if (!/^VIS-2026-[A-Z0-9]{4,12}$/.test(data.code)) return { error: "Revisá el código de reserva." };
   return { data };
 }
 
