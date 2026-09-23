@@ -90,10 +90,12 @@ function registrar_(datos) {
       return respuesta_({ ok: false, code: "DUPLICATE", message: "Ya existe una reserva activa con este DNI." });
     }
 
-    const ocupacion = calcularOcupacion_(filas);
+    // El cupo corresponde a familias/reservas, no a la cantidad de asistentes.
+    // El dato de asistentes se guarda únicamente como información de la reserva.
+    const ocupacion = contarFamiliasActivasPorTurno_(filas);
     const personas = Number(datos.attendees);
     const turno = TURNOS.find(function (item) {
-      return item.capacidad - (ocupacion[item.id] || 0) >= 1;
+      return (ocupacion[item.id] || 0) < item.capacidad;
     });
     if (!turno) {
       return respuesta_({ ok: false, code: "NO_CAPACITY", message: "No quedan cupos disponibles para nuevas familias." });
@@ -115,24 +117,27 @@ function registrar_(datos) {
       shiftId: turno.id
     };
 
-    hoja.appendRow([
+    const valoresFila = [
       new Date(), reserva.code, "Confirmada", reserva.studentName, reserva.studentDni,
       reserva.primarySchool, reserva.adultName, reserva.email, reserva.phone, reserva.attendees,
       reserva.hasRelative, reserva.date, reserva.time, reserva.shiftId, "Pendiente"
-    ]);
-    fila = hoja.getLastRow();
+    ];
+    fila = hoja.getLastRow() + 1;
+    hoja.getRange(fila, 1, 1, valoresFila.length).setValues([valoresFila]);
+    SpreadsheetApp.flush();
   } finally {
     candado.releaseLock();
   }
 
   const correo = enviarConfirmacion_(reserva);
   prepararHoja_().getRange(fila, 15).setValue(correo.estado);
+  SpreadsheetApp.flush();
   return respuesta_({ ok: true, reservation: reservaPublica_(reserva), emailSent: correo.completo });
 }
 
 function estado_() {
   const filas = obtenerFilas_(prepararHoja_());
-  const ocupacion = calcularOcupacion_(filas);
+  const ocupacion = contarFamiliasActivasPorTurno_(filas);
   const schedule = TURNOS.map(function (turno) {
     const occupied = ocupacion[turno.id] || 0;
     return {
@@ -177,12 +182,24 @@ function enviarConfirmacion_(reserva) {
     "Reserva confirmada", "", "Código: " + reserva.code,
     "Estudiante: " + reserva.studentName, "Fecha: " + fecha,
     "Horario: " + reserva.time + " h", "Personas: " + reserva.attendees,
-    "", "Presentarse a las 15:50 h.", "E.E.S.T. N.º 6 “Chacabuco”"
+    "", "IMPORTANTE SOBRE LA VISITA",
+    "La visita admite un máximo de 2 personas por familia. Presentarse a las 15:50 h.",
+    "", "INVITACIÓN A EXPO CHACA · 12 DE NOVIEMBRE",
+    "Toda la comunidad está invitada a recorrer la escuela y conocer los proyectos realizados por nuestros estudiantes.",
+    "Para Expo Chaca no hace falta reservar ni completar ningún formulario y no hay límite de asistentes por familia.",
+    "", "¡Los esperamos!", "E.E.S.T. N.º 6 “Chacabuco”"
   ].join("\n");
   const htmlFamilia = '<div style="font-family:Arial,sans-serif;line-height:1.6;color:#111827">' +
     '<h2 style="color:#0b1029">Reserva confirmada</h2><p>Hola ' + html_(reserva.adultName) + ', la visita de <strong>' + html_(reserva.studentName) + '</strong> quedó registrada.</p>' +
     '<p style="padding:14px;background:#eaf3fb;border-radius:8px"><strong>Código: ' + html_(reserva.code) + '</strong><br>Fecha: ' + html_(fecha) + '<br>Horario: ' + html_(reserva.time) + ' h<br>Personas: ' + html_(reserva.attendees) + '</p>' +
-    '<p>Presentarse a las <strong>15:50 h</strong>.</p><p>E.E.S.T. N.º 6 “Chacabuco”</p></div>';
+    '<p><strong>Importante sobre la visita:</strong> se admite un máximo de <strong>2 personas por familia</strong>. Presentarse a las <strong>15:50 h</strong>.</p>' +
+    '<div style="margin:24px 0;padding:18px;background:#0b1029;color:#ffffff;border-radius:12px">' +
+      '<p style="margin:0 0 6px;color:#79cdf2;font-size:12px;font-weight:bold;letter-spacing:1px">INVITACIÓN ABIERTA · 12 DE NOVIEMBRE</p>' +
+      '<h3 style="margin:0 0 10px;color:#ffffff">También los invitamos a Expo Chaca</h3>' +
+      '<p style="margin:0 0 10px">Toda la comunidad está invitada a recorrer la escuela y conocer los proyectos realizados por nuestros estudiantes.</p>' +
+      '<p style="margin:0"><strong>No hace falta reservar ni completar ningún formulario y no hay límite de asistentes por familia.</strong></p>' +
+    '</div>' +
+    '<p>¡Los esperamos!</p><p>E.E.S.T. N.º 6 “Chacabuco”</p></div>';
 
   let familiaOk = false;
   try {
@@ -237,14 +254,36 @@ function obtenerFilas_(hoja) {
   return cantidad > 0 ? hoja.getRange(2, 1, cantidad, ENCABEZADOS.length).getValues() : [];
 }
 
-function calcularOcupacion_(filas) {
+/**
+ * Cuenta reservas/familias activas. Cada fila válida suma exactamente 1,
+ * independientemente de si en la columna "Personas" figura 1 o 2.
+ */
+function contarFamiliasActivasPorTurno_(filas) {
+  const turnosValidos = new Set(TURNOS.map(function (turno) { return turno.id; }));
   return filas.reduce(function (totales, row) {
-    if (normalizar_(row[2]) !== "cancelada") {
-      const id = String(row[13]);
+    const codigo = String(row[1] || "").trim();
+    const id = String(row[13] || "").trim();
+    if (codigo && turnosValidos.has(id) && normalizar_(row[2]) !== "cancelada") {
       totales[id] = (totales[id] || 0) + 1;
     }
     return totales;
   }, {});
+}
+
+/**
+ * Función de diagnóstico: se puede ejecutar manualmente desde Apps Script.
+ * Muestra en el registro la planilla y la pestaña exactas donde se guardan los datos.
+ */
+function verificarDestinoDatos() {
+  const config = configuracion_();
+  const hoja = prepararHoja_();
+  const filas = obtenerFilas_(hoja);
+  const ocupacion = contarFamiliasActivasPorTurno_(filas);
+
+  console.log("PLANILLA_DATOS=https://docs.google.com/spreadsheets/d/" + config.spreadsheetId + "/edit");
+  console.log("PESTAÑA_DATOS=" + hoja.getName());
+  console.log("RESERVAS_GUARDADAS=" + filas.filter(function (row) { return String(row[1] || "").trim(); }).length);
+  console.log("FAMILIAS_POR_TURNO=" + JSON.stringify(ocupacion));
 }
 
 function siguienteCodigo_(filas) {

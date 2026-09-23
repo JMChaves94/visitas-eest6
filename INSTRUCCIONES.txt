@@ -1,0 +1,43 @@
+ACTUALIZACIÓN VISITAS E.E.S.T. N.º 6
+
+ARCHIVOS PARA GITHUB
+1. Reemplazar index.html en la raíz del repositorio.
+2. Reemplazar styles.css en la raíz del repositorio.
+3. Reemplazar google-apps-script/Code.gs en la carpeta del mismo nombre.
+4. Confirmar los cambios. Vercel se actualizará automáticamente.
+
+El archivo index.html busca el logo como logo.jpeg en la raíz del repositorio.
+No hay que renombrar ni reemplazar ese logo.
+
+PASO OBLIGATORIO EN GOOGLE APPS SCRIPT
+GitHub y Vercel no actualizan el código publicado en Apps Script.
+
+1. Abrir el proyecto de Apps Script conectado a Google Sheets.
+2. Copiar todo el archivo google-apps-script/Code.gs de esta actualización.
+3. Reemplazar todo el contenido de Código.gs.
+4. Conservar o volver a escribir el Gmail correcto en CORREO_ESCUELA.
+5. Guardar.
+6. Ir a Implementar > Administrar implementaciones.
+7. Abrir la implementación con el lápiz.
+8. En Versión, seleccionar Nueva versión.
+9. Presionar Implementar.
+
+No hay que ejecutar configurarSistema otra vez y no hay que cambiar las
+variables de Vercel.
+
+COMPROBAR DÓNDE SE GUARDAN LOS DATOS
+1. En el selector de funciones de Apps Script elegir verificarDestinoDatos.
+2. Presionar Ejecutar.
+3. Abrir Registro de ejecución.
+4. Abrir la URL que aparece luego de PLANILLA_DATOS=.
+5. Entrar en la pestaña indicada luego de PESTAÑA_DATOS= (Inscripciones).
+
+La función también informa RESERVAS_GUARDADAS y FAMILIAS_POR_TURNO.
+
+PRUEBA DEL CONTADOR
+Registrar una familia con 1 persona y otra con 2 personas. El contador debe
+subir solamente 2 lugares en total, porque cada reserva equivale a una familia.
+
+EXPO CHACA
+La información del 12 de noviembre es solamente una invitación abierta. No
+crea reservas, no usa cupos y no tiene límite de asistentes por familia.
