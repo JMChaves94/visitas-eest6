@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="Sistema de inscripción a visitas institucionales de la E.E.S.T. N.º 6 Chacabuco de Morón.">
   <meta name="theme-color" content="#060914">
-  <title>Visitas | E.E.S.T. N.º 6 Chacabuco</title>
+  <title>Reunión con familias | E.E.S.T. N.º 6 Chacabuco</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -17,7 +17,7 @@
         <span class="brand-logo" aria-hidden="true"><img src="assets/logo.jpeg" alt=""></span>
         <span>
           <strong>E.E.S.T. N.º 6 “Chacabuco”</strong>
-          <small>Morón · Visitas institucionales</small>
+          <small>Morón · Familias ingresantes 2027</small>
         </span>
       </a>
       <button class="menu-button" id="menuButton" type="button" aria-expanded="false" aria-controls="mainNav">
@@ -36,19 +36,25 @@
     <section class="hero" id="inicio">
       <div class="shell hero-grid">
         <div class="hero-copy">
-          <p class="eyebrow">Puertas abiertas 2026</p>
-          <h1>Vení a conocer nuestra escuela</h1>
-          <p class="hero-text">Reservá una visita para recorrer las instalaciones, conocer las modalidades y conversar con docentes y estudiantes.</p>
-          <div class="hero-actions">
-            <a class="button button-primary" href="#inscripcion">Reservar una visita</a>
-            <a class="button button-quiet" href="#consulta">Ya tengo un turno</a>
-          </div>
-          <ul class="trust-list" aria-label="Características del sistema">
-            <li>Reserva gratuita</li>
-            <li>Confirmación inmediata</li>
-            <li>Cupos organizados</li>
-          </ul>
-        </div>
+  <p class="eyebrow">Reunión con familias</p>
+  <h1>Encuentro para ingresantes a primer año 2027</h1>
+  <p class="hero-text">
+    Actividad destinada exclusivamente a familias de estudiantes que ingresarán
+    a primer año en 2027. Reservá un turno para conocer la escuela y recibir
+    información sobre el ingreso.
+  </p>
+
+  <div class="hero-actions">
+    <a class="button button-primary" href="#inscripcion">Reservar un turno</a>
+    <a class="button button-quiet" href="#consulta">Ya tengo un turno</a>
+  </div>
+
+  <ul class="trust-list" aria-label="Características del sistema">
+    <li>Exclusivo ingresantes 2027</li>
+    <li>Confirmación inmediata</li>
+    <li>Cupos organizados</li>
+  </ul>
+</div>
 
         <aside class="availability-card" aria-labelledby="availableTitle">
           <div class="card-heading">
@@ -82,7 +88,12 @@
       <div class="section-heading">
         <p class="eyebrow">Inscripción</p>
         <h2>Reservá el turno de tu familia</h2>
-        <p>Completá los datos. El sistema asignará automáticamente el primer horario disponible. Cada reserva ocupa un solo cupo familiar, asistan una o dos personas.</p>
+        <p>
+          Esta inscripción es exclusivamente para familias de estudiantes que
+          ingresarán a primer año en 2027. El sistema asignará automáticamente el
+          primer horario disponible. Cada reserva ocupa un solo cupo familiar,
+          asistan una o dos personas.
+        </p>
       </div>
 
       <div class="form-layout">
@@ -94,7 +105,10 @@
           <div class="form-section">
             <div class="form-section-title">
               <span>1</span>
-              <div><h3>Datos del estudiante</h3><p>Información del futuro ingresante.</p></div>
+              <div>
+                <h3>Datos del ingresante</h3>
+                <p>Información del estudiante que ingresará a primer año en 2027.</p>
+              </div>
             </div>
             <div class="field-grid two-columns">
               <label class="field">
@@ -111,6 +125,17 @@
                 <span>Escuela primaria</span>
                 <input name="primarySchool" type="text" maxlength="100" required placeholder="Nombre o número de escuela">
                 <small class="field-error"></small>
+                <label class="field">
+                <span>Distrito de la escuela primaria</span>
+                <input
+                  name="primaryDistrict"
+                  type="text"
+                  maxlength="60"
+                  required
+                  placeholder="Ej.: Morón"
+                >
+                <small class="field-error"></small>
+              </label>
               </label>
             </div>
           </div>
@@ -149,25 +174,48 @@
             </div>
           </div>
 
-          <div class="form-section">
-            <div class="form-section-title">
-              <span>3</span>
-              <div><h3>Vínculo con la escuela</h3><p>Este dato nos ayuda a conocer a las familias que nos visitan.</p></div>
+         <div class="form-section">
+          <div class="form-section-title">
+            <span>3</span>
+            <div>
+              <h3>Hermanos en la escuela</h3>
+              <p>
+                Indicá únicamente si el futuro ingresante tiene hermanos que
+                actualmente asisten a la E.E.S.T. N.º 6.
+              </p>
             </div>
-            <fieldset class="choice-field">
-              <legend>¿Ya tiene un hijo, familiar o conocido en la escuela?</legend>
-              <div class="choice-row">
-                <label><input type="radio" name="hasRelative" value="Sí" required> Sí</label>
-                <label><input type="radio" name="hasRelative" value="No" required> No</label>
-              </div>
-              <small class="field-error"></small>
-            </fieldset>
-            <label class="check-field">
-              <input name="consent" type="checkbox" required>
-              <span>Confirmo que los datos son correctos y acepto que se utilicen únicamente para organizar esta visita.</span>
-            </label>
-            <small class="field-error consent-error"></small>
           </div>
+        
+          <fieldset class="choice-field">
+            <legend>
+              ¿El estudiante tiene hermanos que actualmente asisten a esta escuela?
+            </legend>
+        
+            <div class="choice-row">
+              <label>
+                <input type="radio" name="hasSibling" value="Sí" required>
+                Sí
+              </label>
+        
+              <label>
+                <input type="radio" name="hasSibling" value="No" required>
+                No
+              </label>
+            </div>
+        
+            <small class="field-error"></small>
+          </fieldset>
+        
+          <label class="check-field">
+            <input name="consent" type="checkbox" required>
+            <span>
+              Confirmo que los datos son correctos y acepto que se utilicen únicamente
+              para organizar esta reunión.
+            </span>
+          </label>
+        
+          <small class="field-error consent-error"></small>
+        </div>
 
           <div class="form-actions">
             <p><strong>Importante:</strong> la reserva queda asociada al DNI del estudiante.</p>
@@ -210,7 +258,7 @@
   <footer class="site-footer">
     <div class="shell footer-inner">
       <div class="brand footer-brand"><span class="brand-logo" aria-hidden="true"><img src="assets/logo.jpeg" alt=""></span><span><strong>E.E.S.T. N.º 6 “Chacabuco”</strong><small>Morón, Buenos Aires</small></span></div>
-      <p>Sistema de visitas institucionales · 2026</p>
+      <p>Reuniones con familias ingresantes · 2027</p>
     </div>
   </footer>
 
