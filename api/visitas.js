@@ -35,21 +35,56 @@ function validateRegister(input) {
     studentName: cleanText(input.studentName, 80),
     studentDni: cleanDni(input.studentDni),
     primarySchool: cleanText(input.primarySchool, 100),
+    primaryDistrict: cleanText(input.primaryDistrict, 60),
     adultName: cleanText(input.adultName, 80),
     email: cleanText(input.email, 120).toLowerCase(),
     phone: cleanText(input.phone, 25),
     attendees: Number(input.attendees),
-    hasRelative: cleanText(input.hasRelative, 2),
+    hasSibling: cleanText(input.hasSibling, 2),
     website: cleanText(input.website, 100)
   };
 
-  if (data.website) return { error: "No pudimos procesar la solicitud." };
-  if (data.studentName.length < 3 || data.primarySchool.length < 2 || data.adultName.length < 3) return { error: "Revisá los nombres y la escuela primaria." };
-  if (!/^\d{7,9}$/.test(data.studentDni)) return { error: "Ingresá un DNI válido, sin puntos." };
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) return { error: "Ingresá un correo electrónico válido." };
-  if (data.phone.length < 6) return { error: "Ingresá un teléfono válido." };
-  if (!Number.isInteger(data.attendees) || data.attendees < 1 || data.attendees > 2) return { error: "Seleccioná una o dos personas." };
-  if (!new Set(["Sí", "No"]).has(data.hasRelative)) return { error: "Indicá si ya tienen un vínculo con la escuela." };
+  if (data.website) {
+    return { error: "No pudimos procesar la solicitud." };
+  }
+
+  if (
+    data.studentName.length < 3 ||
+    data.primarySchool.length < 2 ||
+    data.primaryDistrict.length < 2 ||
+    data.adultName.length < 3
+  ) {
+    return {
+      error: "Revisá los nombres, la escuela primaria y su distrito."
+    };
+  }
+
+  if (!/^\d{7,9}$/.test(data.studentDni)) {
+    return { error: "Ingresá un DNI válido, sin puntos." };
+  }
+
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) {
+    return { error: "Ingresá un correo electrónico válido." };
+  }
+
+  if (data.phone.length < 6) {
+    return { error: "Ingresá un teléfono válido." };
+  }
+
+  if (
+    !Number.isInteger(data.attendees) ||
+    data.attendees < 1 ||
+    data.attendees > 2
+  ) {
+    return { error: "Seleccioná una o dos personas." };
+  }
+
+  if (!new Set(["Sí", "No"]).has(data.hasSibling)) {
+    return {
+      error: "Indicá si el estudiante tiene hermanos en la escuela."
+    };
+  }
+
   return { data };
 }
 
