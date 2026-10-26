@@ -21,6 +21,21 @@ const TURNOS = [
   { id: "2026-10-27-1600", fecha: "2026-10-27", hora: "16:00", capacidad: 50 }
 ];
 
+
+function turnosVigentes_() {
+  const hoy = Utilities.formatDate(
+    new Date(),
+    "America/Argentina/Buenos_Aires",
+    "yyyy-MM-dd"
+  );
+
+  return TURNOS.filter(function (turno) {
+    return turno.fecha >= hoy &&
+           turno.fecha <= "2026-10-27";
+  });
+}
+
+
 /** Ejecutar una sola vez desde el editor, con la planilla abierta. */
 function configurarSistema() {
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(CORREO_ESCUELA)) {
@@ -94,9 +109,11 @@ function registrar_(datos) {
     // El dato de asistentes se guarda únicamente como información de la reserva.
     const ocupacion = contarFamiliasActivasPorTurno_(filas);
     const personas = Number(datos.attendees);
-    const turno = TURNOS.find(function (item) {
+    
+    const turno = turnosVigentes_().find(function (item) {
       return (ocupacion[item.id] || 0) < item.capacidad;
     });
+
     if (!turno) {
       return respuesta_({ ok: false, code: "NO_CAPACITY", message: "No quedan cupos disponibles para nuevas familias." });
     }
@@ -138,7 +155,7 @@ function registrar_(datos) {
 function estado_() {
   const filas = obtenerFilas_(prepararHoja_());
   const ocupacion = contarFamiliasActivasPorTurno_(filas);
-  const schedule = TURNOS.map(function (turno) {
+  const schedule = turnosVigentes_().map(function (turno) {
     const occupied = ocupacion[turno.id] || 0;
     return {
       id: turno.id,
